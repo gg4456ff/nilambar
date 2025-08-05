@@ -1,0 +1,13 @@
+{
+  "name": "Lookup Export App",
+  "short_name": "Lookup",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0066cc",
+  "icons": [{
+    "src": "https://ssl.gstatic.com/docs/doclist/images/drive_icon_128.png",
+    "sizes": "128x128",
+    "type": "image/png"
+  }]
+}
