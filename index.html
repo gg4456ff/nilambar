@@ -1,40 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>WO Export</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0066cc">
-  
-  <!-- Redirect to Apps Script after 0.1s (avoids iframe issues) -->
-  <script>
-    setTimeout(function() {
-      window.location.href = "https://script.google.com/macros/s/AKfycbzSUVMnuoIzFKD9FlwAGQXB0urK83LX1gAfXocqilus26j34WpiGIp-od55pbNWRNdW/exec";
-    }, 100);
-  </script>
-
   <style>
-    /* Loading spinner styles */
-    .loader {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #0066cc;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
+    /* Your existing CSS remains exactly the same */
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; background-color: var(--bg); color: var(--fg); transition: all 0.3s; }
+    :root { --bg: #f2f4f8; --fg: #000; --card: #fff; }
+    .dark { --bg: #121212; --fg: #eee; --card: #1f1f1f; }
+    /* ... keep all other CSS ... */
   </style>
 </head>
 <body>
-  <div class="loader"></div>
-  <p style="text-align:center;margin-top:120px;">Redirecting to WO Export App...</p>
+  <!-- Your existing HTML remains exactly the same -->
+  <div class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</div>
+  <div class="container">
+    <h2>Download LOOKUP Sheet</h2>
+    <!-- ... rest of your HTML ... -->
+  </div>
+
+  <script>
+    // Replace ALL google.script.run calls with fetch() to Apps Script API
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSUVMnuoIzFKD9FlwAGQXB0urK83LX1gAfXocqilus26j34WpiGIp-od55pbNWRNdW/exec";
+
+    async function loadWO() {
+      try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=getWOs`);
+        const list = await response.json();
+        const datalist = document.getElementById('woList');
+        list.forEach(w => {
+          datalist.appendChild(new Option(w));
+        });
+      } catch (error) {
+        console.error("Error loading WOs:", error);
+      }
+    }
+
+    async function download() {
+      const wo = document.getElementById('wo').value.trim();
+      if (!wo) return alert('Please select a WO!');
+      
+      try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=exportLookupAsExcel&wo=${encodeURIComponent(wo)}`);
+        const fileObj = await response.json();
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${fileObj.base64}`;
+        link.download = fileObj.filename;
+        link.click();
+        
+        track('Download', wo);
+      } catch (error) {
+        alert("Error generating file");
+        console.error(error);
+      }
+    }
+
+    // Modify other functions similarly (sendEmail, track, etc.)
+    // Keep all theme-related functions as-is
+  </script>
 </body>
 </html>
